@@ -18,10 +18,14 @@ class TForm1 : public TForm
 __published:	// IDE-managed Components
 	TButton *Button1;
 	TVirtualStringTree *VirtualStringTree1;
+	TButton *Button2;
 	void __fastcall Button1Click(TObject *Sender);
 	void __fastcall FormCreate(TObject *Sender);
 	void __fastcall VirtualStringTree1GetText(TBaseVirtualTree *Sender, PVirtualNode Node,
           TColumnIndex Column, TVSTTextType TextType, UnicodeString &CellText);
+	void __fastcall Button2Click(TObject *Sender);
+	void __fastcall VirtualStringTree1NodeClick(TBaseVirtualTree *Sender, const THitInfo &HitInfo);
+
 
 
 private:	// User declarations

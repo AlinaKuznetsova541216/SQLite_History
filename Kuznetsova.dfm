@@ -32,7 +32,9 @@ object Form1: TForm1
     Header.MainColumn = 1
     Header.Options = [hoColumnResize, hoDrag, hoShowHint, hoShowSortGlyphs, hoVisible]
     TabOrder = 1
+    TreeOptions.SelectionOptions = [toExtendedFocus, toAlwaysSelectNode]
     OnGetText = VirtualStringTree1GetText
+    OnNodeClick = VirtualStringTree1NodeClick
     Columns = <
       item
         Position = 0
@@ -44,5 +46,14 @@ object Form1: TForm1
         Text = 'name'
         Width = 618
       end>
+  end
+  object Button2: TButton
+    Left = 240
+    Top = 363
+    Width = 233
+    Height = 25
+    Caption = #1059#1076#1072#1083#1080#1090#1100' '#1079#1072#1087#1080#1089#1100
+    TabOrder = 2
+    OnClick = Button2Click
   end
 end

@@ -19,13 +19,12 @@
 #include "sqlite3.h"
 #include <stdlib.h>
 #include <stdio.h>
-//#pragma encoding = "UTF-8"
+
 typedef struct
 {
 	int id;
 	UnicodeString name;
    //	AnsiString title;
-	//int last_visit_time;//body_xml
 } MyHistory;
 
 
@@ -54,7 +53,7 @@ void __fastcall TForm1::Button1Click(TObject *Sender)
 	if ( error )
 	{
 	   //	cout<<"Can't open database: "<<sqlite3_errmsg(db)<<endl;
-		//sqlite3_close(db);
+		sqlite3_close(db);
 	}
 
 	sqlite3_stmt    *result;
@@ -64,7 +63,7 @@ void __fastcall TForm1::Button1Click(TObject *Sender)
 	if ( error )
 	{
 		//cout<<"Can't select data: "<<sqlite3_errmsg(db)<<endl;
-		//sqlite3_close(db);
+		sqlite3_close(db);
 	}
 	//Отображаем на экране
 
@@ -78,15 +77,10 @@ void __fastcall TForm1::Button1Click(TObject *Sender)
 		 //nodeData -> title = (UnicodeString)(char *)sqlite3_column_text(result, 2);
 
 	   //	Edit1 ->Text = ((char*)(sqlite3_column_text(result, 2)));
-	   //	nodeData -> participants = sqlite3_column_text(res, 2);
-	   //	nodeData -> body_xml = sqlite3_column_text( res, 19);;
-	   //WCHAR *wstr = (WCHAR*)sqlite3_column_text16(pStatement, 3);
 		rec_count++;
     }
 	  sqlite3_finalize(result);
-	//------------------------------
-	//Корректное завершение работы с БД
-	//------------------------------
+
 	sqlite3_close(db);
 	VirtualStringTree1 ->EndUpdate();
 }
@@ -95,7 +89,6 @@ void __fastcall TForm1::Button1Click(TObject *Sender)
 void __fastcall TForm1::FormCreate(TObject *Sender)
 {
 VirtualStringTree1 -> NodeDataSize = sizeof(MyHistory);
-//system("chcp 1251");
 }
 //---------------------------------------------------------------------------
 
@@ -111,9 +104,29 @@ if (!Node) return;
 		   case 0: CellText = nodeData -> id;break;
 		   case 1: CellText= nodeData ->name; break;
 		  // case 2: CellText = nodeData -> title; break;
-		  // case 3: CellText = nodeData -> body_xml; break;
 		}
 }
 //---------------------------------------------------------------------------
 
+
+void __fastcall TForm1::Button2Click(TObject *Sender)
+{    PVirtualNode selectedNode = VirtualStringTree1->FocusedNode;
+//unsigned int selectedNodeIndex = selectedNode->Index;
+MyHistory *nodeData = (MyHistory*)VirtualStringTree1->GetNodeData(selectedNode);
+VirtualStringTree1->DeleteNode(selectedNode);
+
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TForm1::VirtualStringTree1NodeClick(TBaseVirtualTree *Sender, const THitInfo &HitInfo)
+
+{
+PVirtualNode selectedNode = VirtualStringTree1->FocusedNode;
+if(!selectedNode)
+{
+	//...
+	//return;
+}
+}
+//---------------------------------------------------------------------------
 
