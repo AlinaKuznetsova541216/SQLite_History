@@ -23,8 +23,10 @@
 typedef struct
 {
 	int id;
-	UnicodeString name;
-   //	AnsiString title;
+    UnicodeString author;
+    UnicodeString dialog_partner;
+    UnicodeString body_xml;
+	UnicodeString timestamp;
 } MyHistory;
 
 
@@ -40,49 +42,31 @@ VirtualStringTree1 -> NodeDataSize = sizeof(MyHistory);
 //---------------------------------------------------------------------------
 void __fastcall TForm1::Button1Click(TObject *Sender)
 {
- VirtualStringTree1 -> Clear();
- setlocale (LC_ALL,"Rus");
- setlocale(0, ".1251");
+
  using namespace std;
-	const char *db_name="D:\\gns\\proj\\SQLite\\History";
-	sqlite3 *db;
-	char *zErrMsg = 0;
-	int error;
+	const char *db_name="D:\\gns\\proj\\SQLite\\main.db";
+	VirtualStringTree1 -> Clear();
+    sqlite3_stmt *stmt;
+    sqlite3* db;
+	char* sql ="select * from messages;";
+	sqlite3_open(db_name ,&db);
+	sqlite3_prepare_v2( db,sql, -1, &stmt, NULL);
 
-	error = sqlite3_open(db_name, &db);
-	if ( error )
-	{
-	   //	cout<<"Can't open database: "<<sqlite3_errmsg(db)<<endl;
-		sqlite3_close(db);
-	}
-
-	sqlite3_stmt    *result;
-
-
-	error = sqlite3_prepare_v2(db,"SELECT id, url from urls", -1, &result, NULL);
-	if ( error )
-	{
-		//cout<<"Can't select data: "<<sqlite3_errmsg(db)<<endl;
-		sqlite3_close(db);
-	}
-	//Отображаем на экране
-
-	int     rec_count = 0;
-	 VirtualStringTree1 ->BeginUpdate();
-	while (sqlite3_step(result) == SQLITE_ROW)
-	{   PVirtualNode entryNode = VirtualStringTree1 -> AddChild(VirtualStringTree1 -> RootNode);
+    while (sqlite3_step(stmt) == SQLITE_ROW)
+    {
+		PVirtualNode entryNode = VirtualStringTree1 -> AddChild(VirtualStringTree1 -> RootNode);
 		MyHistory *nodeData = (MyHistory*)VirtualStringTree1 -> GetNodeData(entryNode);
-		nodeData -> id = sqlite3_column_int64(result, 0) ;
-		nodeData -> name =(char*)sqlite3_column_text(result, 1);
-		 //nodeData -> title = (UnicodeString)(char *)sqlite3_column_text(result, 2);
-
-	   //	Edit1 ->Text = ((char*)(sqlite3_column_text(result, 2)));
-		rec_count++;
+		nodeData -> id = sqlite3_column_int(stmt, 0) ;
+		nodeData -> author   = (char*)sqlite3_column_text(stmt,4);
+		nodeData -> dialog_partner = (char*)sqlite3_column_text( stmt, 8);
+		nodeData -> body_xml = (char*)sqlite3_column_text(stmt, 18);
+	   // nodeData -> body_xml = (wchar_t*)sqlite3_column_text16(stmt, 18);
+		//nodeData ->chatname  = (wchar_t*)sqlite3_column_text16(stmt, 3);
+		nodeData ->timestamp = (char*)sqlite3_column_text(stmt, 9);
     }
-	  sqlite3_finalize(result);
+    sqlite3_finalize(stmt);
+    sqlite3_close(db);
 
-	sqlite3_close(db);
-	VirtualStringTree1 ->EndUpdate();
 }
 //---------------------------------------------------------------------------
 
@@ -102,19 +86,33 @@ if (!Node) return;
 	switch (Column)
 		{
 		   case 0: CellText = nodeData -> id;break;
-		   case 1: CellText= nodeData ->name; break;
-		  // case 2: CellText = nodeData -> title; break;
+           case 1: CellText =  nodeData -> author; break;
+           case 2: CellText = nodeData -> dialog_partner; break;
+		   case 3: CellText = nodeData -> body_xml; break;
 		}
 }
 //---------------------------------------------------------------------------
 
 
 void __fastcall TForm1::Button2Click(TObject *Sender)
-{    PVirtualNode selectedNode = VirtualStringTree1->FocusedNode;
-//unsigned int selectedNodeIndex = selectedNode->Index;
-MyHistory *nodeData = (MyHistory*)VirtualStringTree1->GetNodeData(selectedNode);
-VirtualStringTree1->DeleteNode(selectedNode);
+{     PVirtualNode selectedNode = VirtualStringTree1 -> FocusedNode;
+	int selectedNodeIndex = selectedNode -> Index;
 
+	 //int id =  VirtualStringTree1.TVTHeader.Columns[0];
+	MyHistory *Data = (MyHistory*)VirtualStringTree1->GetNodeData(selectedNode);
+	int id = Data->id;
+	sqlite3_stmt *stmt;
+	const char *db_name="D:\\gns\\proj\\SQLite\\main.db";
+	sqlite3* db;
+	sqlite3_open(db_name ,&db);
+   //	MyHistory *nodeData = (MyHistory*)VirtualStringTree1 -> GetNodeData();
+	wchar_t* sql =("DELETE from messages where id="+id);
+	sqlite3_prepare_v2( db,sql, -1, &stmt, NULL);
+	sqlite3_step(stmt);
+	sqlite3_finalize(stmt);
+	sqlite3_close(db);
+	VirtualStringTree1 -> DeleteNode(selectedNode);
+	Edit1->Text=sql;
 }
 //---------------------------------------------------------------------------
 
@@ -129,4 +127,6 @@ if(!selectedNode)
 }
 }
 //---------------------------------------------------------------------------
+
+
 
