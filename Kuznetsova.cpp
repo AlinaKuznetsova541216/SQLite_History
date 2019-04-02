@@ -25,8 +25,7 @@ typedef struct
 	int id;
     UnicodeString author;
     UnicodeString dialog_partner;
-    UnicodeString body_xml;
-	UnicodeString timestamp;
+	UnicodeString body_xml;
 } MyHistory;
 
 
@@ -60,9 +59,6 @@ void __fastcall TForm1::Button1Click(TObject *Sender)
 		nodeData -> author   = (char*)sqlite3_column_text(stmt,4);
 		nodeData -> dialog_partner = (char*)sqlite3_column_text( stmt, 8);
 		nodeData -> body_xml = (char*)sqlite3_column_text(stmt, 18);
-	   // nodeData -> body_xml = (wchar_t*)sqlite3_column_text16(stmt, 18);
-		//nodeData ->chatname  = (wchar_t*)sqlite3_column_text16(stmt, 3);
-		nodeData ->timestamp = (char*)sqlite3_column_text(stmt, 9);
     }
     sqlite3_finalize(stmt);
     sqlite3_close(db);
@@ -100,19 +96,21 @@ void __fastcall TForm1::Button2Click(TObject *Sender)
 
 	 //int id =  VirtualStringTree1.TVTHeader.Columns[0];
 	MyHistory *Data = (MyHistory*)VirtualStringTree1->GetNodeData(selectedNode);
-	int id = Data->id;
+	UnicodeString id = Data->id;
 	sqlite3_stmt *stmt;
 	const char *db_name="D:\\gns\\proj\\SQLite\\main.db";
 	sqlite3* db;
 	sqlite3_open(db_name ,&db);
-   //	MyHistory *nodeData = (MyHistory*)VirtualStringTree1 -> GetNodeData();
-	wchar_t* sql =("DELETE from messages where id="+id);
-	sqlite3_prepare_v2( db,sql, -1, &stmt, NULL);
+   String sql = String("DELETE from messages where id="+id);
+   wchar_t *sql1 = sql.c_str();
+   //MyHistory *nodeData = (MyHistory*)VirtualStringTree1 -> GetNodeData();
+	//wchar_t* sql =("DELETE from messages where id="+id);
+	sqlite3_prepare16_v2( db,sql1, -1, &stmt, NULL);
 	sqlite3_step(stmt);
 	sqlite3_finalize(stmt);
 	sqlite3_close(db);
 	VirtualStringTree1 -> DeleteNode(selectedNode);
-	Edit1->Text=sql;
+   //	Edit1->Text=sql1;
 }
 //---------------------------------------------------------------------------
 

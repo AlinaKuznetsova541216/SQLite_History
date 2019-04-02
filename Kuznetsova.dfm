@@ -44,15 +44,17 @@ object Form1: TForm1
       item
         Position = 1
         Text = 'author'
-        Width = 618
+        Width = 189
       end
       item
         Position = 2
         Text = 'dialog_partner'
+        Width = 135
       end
       item
         Position = 3
         Text = 'body_xml'
+        Width = 174
       end>
   end
   object Button2: TButton
@@ -63,12 +65,5 @@ object Form1: TForm1
     Caption = #1059#1076#1072#1083#1080#1090#1100' '#1079#1072#1087#1080#1089#1100
     TabOrder = 2
     OnClick = Button2Click
-  end
-  object Edit1: TEdit
-    Left = 520
-    Top = 367
-    Width = 89
-    Height = 21
-    TabOrder = 3
   end
 end
