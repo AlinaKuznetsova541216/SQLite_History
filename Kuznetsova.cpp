@@ -43,12 +43,18 @@ void __fastcall TForm1::Button1Click(TObject *Sender)
 {
 
  using namespace std;
-	const char *db_name="D:\\gns\\proj\\SQLite\\main.db";
+	const char *db_name="main.db";
 	VirtualStringTree1 -> Clear();
     sqlite3_stmt *stmt;
     sqlite3* db;
 	char* sql ="select * from messages;";
-	sqlite3_open(db_name ,&db);
+	int r = sqlite3_open(db_name ,&db);
+	if (r!=SQLITE_OK) {
+	Edit1->Text = String("Ошибка!")+sqlite3_errmsg(db);
+	}
+	else {
+	Edit1->Text = "БД успешно загружена";
+	}
 	sqlite3_prepare_v2( db,sql, -1, &stmt, NULL);
 
     while (sqlite3_step(stmt) == SQLITE_ROW)
@@ -98,15 +104,18 @@ void __fastcall TForm1::Button2Click(TObject *Sender)
 	MyHistory *Data = (MyHistory*)VirtualStringTree1->GetNodeData(selectedNode);
 	UnicodeString id = Data->id;
 	sqlite3_stmt *stmt;
-	const char *db_name="D:\\gns\\proj\\SQLite\\main.db";
+	const char *db_name="main.db";
 	sqlite3* db;
-	sqlite3_open(db_name ,&db);
+	int r = sqlite3_open(db_name ,&db);
    String sql = String("DELETE from messages where id="+id);
    wchar_t *sql1 = sql.c_str();
    //MyHistory *nodeData = (MyHistory*)VirtualStringTree1 -> GetNodeData();
 	//wchar_t* sql =("DELETE from messages where id="+id);
 	sqlite3_prepare16_v2( db,sql1, -1, &stmt, NULL);
 	sqlite3_step(stmt);
+	if (true) {
+        Edit1->Text="Запись удалена из БД";
+	}
 	sqlite3_finalize(stmt);
 	sqlite3_close(db);
 	VirtualStringTree1 -> DeleteNode(selectedNode);
@@ -118,11 +127,7 @@ void __fastcall TForm1::VirtualStringTree1NodeClick(TBaseVirtualTree *Sender, co
 
 {
 PVirtualNode selectedNode = VirtualStringTree1->FocusedNode;
-if(!selectedNode)
-{
-	//...
-	//return;
-}
+
 }
 //---------------------------------------------------------------------------
 
