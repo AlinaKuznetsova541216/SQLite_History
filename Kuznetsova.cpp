@@ -114,7 +114,7 @@ void __fastcall TForm1::Button2Click(TObject *Sender)
 	sqlite3_prepare16_v2( db,sql1, -1, &stmt, NULL);
 	sqlite3_step(stmt);
 	if (true) {
-        Edit1->Text="Запись удалена из БД";
+		Edit1->Text="Запись удалена из БД";
 	}
 	sqlite3_finalize(stmt);
 	sqlite3_close(db);
@@ -132,4 +132,26 @@ PVirtualNode selectedNode = VirtualStringTree1->FocusedNode;
 //---------------------------------------------------------------------------
 
 
+
+void __fastcall TForm1::Button3Click(TObject *Sender)
+{
+	// 	MyHistory *Data = (MyHistory*)VirtualStringTree1->GetNodeData(selectedNode);
+	sqlite3_stmt *stmt;
+	const char *db_name="main.db";
+	sqlite3* db;
+	int r = sqlite3_open(db_name ,&db);
+   char *sql = "DELETE from messages";
+   //wchar_t *sql1 = sql.c_str();
+   //MyHistory *nodeData = (MyHistory*)VirtualStringTree1 -> GetNodeData();
+	//wchar_t* sql =("DELETE from messages where id="+id);
+	sqlite3_prepare_v2( db,sql, -1, &stmt, NULL);
+	sqlite3_step(stmt);
+	if (true) {
+		Edit1->Text="База данных очищена. Данные отсутствуют";
+	}
+	sqlite3_finalize(stmt);
+	sqlite3_close(db);
+    VirtualStringTree1->Clear();
+}
+//---------------------------------------------------------------------------
 
